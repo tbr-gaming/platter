@@ -6,12 +6,21 @@
 
 @layer components {
   .product-title {
-    @apply text-lg font-normal text-[#1C1D1D] font-bebas;
+    @apply text-lg font-normal text-[#1C1D1D] font-bebas leading-none py-1;
   }
   .product-price {
-    @apply text-base font-medium text-[#1C1D1D] font-poppins;
+    @apply text-base font-medium text-[#1C1D1D] font-poppins leading-none py-1;
   }
   .product-image img {
     @apply max-w-none;
+  }
+  .product-rating {
+    @apply text-xs font-normal text-[#1C1D1D] font-poppins leading-none py-1 flex items-center gap-2;
+  }
+  .star-rating {
+    @apply flex items-center gap-0.5;
+  }
+  .stars {
+    @apply w-16 h-4 text-white flex-shrink-0 drop-shadow-[0_0_0.5px_black];
   }
 }
