@@ -9,11 +9,11 @@
       "settings": {
         "heading": "Best Sellers",
         "show_view_all": true,
-        "view_all_text": "View All",
+        "view_all_text": "Shop All Best Sellers",
         "view_all_link": "/collections/all",
         "product_selection": "best_selling",
         "products_to_show": 10,
-        "show_all_products": false
+        "show_all_products": false,
       }
     }
   },

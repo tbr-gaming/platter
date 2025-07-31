@@ -4,8 +4,6 @@
   assign show_view_all = section.settings.show_view_all
   assign view_all_text = section.settings.view_all_text
   assign view_all_link = section.settings.view_all_link
-  assign products_to_show = section.settings.products_to_show
-  assign show_all_products = section.settings.show_all_products
 
   # Get products based on selection method
   if section.settings.product_selection == 'manual'
@@ -16,46 +14,124 @@
       assign products = collection.products
     endif
   elsif section.settings.product_selection == 'best_selling'
-    # TODO: add best selling products logic - currently just showing all products
-    assign all_collection = collections.all
-    assign products = all_collection.products
+    assign best_selling_collection = collections['best-sellers']
+    assign products = best_selling_collection.products
   endif
-
-
 
 -%}
 
-<section id="{{ section_id }}" class="carousel-section">
+<section id="{{ section_id }}" class="carousel-section py-12">
   <!-- container -->
   <div class="container">
     <!-- header section: title, view more button (desktop) -->
-    {% if heading != blank %}
-      <h2>{{ heading }}</h2>
-    {% endif %}
-    {% if show_view_all %}
-      <a href="{{ view_all_link }}">
-        {{ view_all_text }}
-      </a>
-    {% endif %}
-    <!-- Desktop/Mobile:product carousel layout -->
-    {% if products != blank %}
-      <div class="product-card">
-        {% for product in products %}
-          {{ product.url }}
-          {{ product.featured_image | image_url: width: 400 }}
-          {{ product.title }}
-          {{ product.price }}
-          {{ product.compare_at_price }}
+    <div class="flex justify-between items-center mb-8">
+      {% if heading != blank %}
+        <div class="flex-1">
+          <h2 class="text-3xl font-bold text-gray-900">{{ heading }}</h2>
+        </div>
+      {% endif %}
+      {% if show_view_all %}
+        <div>
+          <a
+            href="{{ view_all_link }}"
+            class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 group text-sm"
+          >
+            <span>{{ view_all_text }}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="ml-1 w-4 h-4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
 
-          {{ products_to_show }}
-          {{ show_all_products }}
-          {{  }}
-        {%  endfor %}
-      </div>
-    {%  endif %}
+          </a>
+        </div>
+      {% endif %}
+    </div>
+    <!-- Desktop/Mobile:product carousel layout -->
+    <div class="
+      grid grid-cols-2 gap-4
+      md:flex md:gap-6 md:overflow-x-auto md:pb-4 md:scrollbar-thin md:scrollbar-thumb-gray-300 md:scrollbar-track-gray-100">
+      {% if products != blank %}
+          {% for product in products %}
+            <div class="
+              product-card bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex-shrink-0
+              w-full
+              md:w-64
+              {% if forloop.index > 4 %}hidden md:block{% endif %}
+            "
+            >
+              <a href="{{ product.url }}" class="block">
+                <div class="product-image aspect-square overflow-hidden">
+                  {% if product.featured_image %}
+                    <img
+                      src="{{ product.featured_image | image_url: width: 400 }}"
+                      alt="{{ product.title }}"
+                      class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                      width="{{ product.featured_image.width }}"
+                      height="{{ product.featured_image.height }}"
+                    >
+                  {% else %}
+                    <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <span class="text-gray-400">No image</span>
+                    </div>
+                  {% endif %}
+                </div>
+
+                <div class="product-info p-4">
+                  <h3 class="product-title text-lg font-semibold text-gray-900 mb-2 line-clamp-2">{{ product.title }}</h3>
+                  <div class="product-price">
+                    <span class="text-gray-900 font-bold text-lg">{{ product.price | money }}</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          {% endfor %}
+      {%  endif %}
+    </div>
     <!-- Mobile: view more button -->
+    {% if products.size > 4 %}
+      <div class="md:hidden text-center mt-6">
+        <button
+          id="show-more-btn-{{ section.id }}"
+          class="show-more-btn bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
+          onclick="toggleProducts('{{ section.id }}')"
+        >
+          <span id="btn-text-{{ section.id }}">Show More</span>
+        </button>
+      </div>
+    {% endif %}
   </div>
 </section>
+
+<script>
+function toggleProducts(sectionId) {
+  const section = document.getElementById('product-carousel-' + sectionId);
+  const productCards = section.querySelectorAll('.product-card');
+  const btnText = document.getElementById('btn-text-' + sectionId);
+  const showMoreBtn = document.getElementById('show-more-btn-' + sectionId);
+
+  let isExpanded = showMoreBtn.getAttribute('data-expanded') === 'true';
+
+  productCards.forEach((card, index) => {
+    if (index >= 4) { // Products after the first 4
+      if (isExpanded) {
+        card.classList.add('hidden');
+        card.classList.remove('md:block');
+      } else {
+        card.classList.remove('hidden');
+        card.classList.add('md:block');
+      }
+    }
+  });
+
+  if (isExpanded) {
+    btnText.textContent = 'Show More';
+    showMoreBtn.setAttribute('data-expanded', 'false');
+  } else {
+    btnText.textContent = 'Show Less';
+    showMoreBtn.setAttribute('data-expanded', 'true');
+  }
+}
+</script>
 
 {% schema %}
 {
@@ -101,22 +177,6 @@
       "id": "collection",
       "label": "Collection",
       "info": "Display products from this collection"
-    },
-    {
-      "type": "range",
-      "id": "products_to_show",
-      "min": 2,
-      "max": 20,
-      "step": 1,
-      "default": 4,
-      "label": "Number of products to show"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_all_products",
-      "label": "Show all products (ignore limit)",
-      "default": false,
-      "info": "When enabled, displays all available products regardless of the limit above"
     },
     {
       "type": "checkbox",
