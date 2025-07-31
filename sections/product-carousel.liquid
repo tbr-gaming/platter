@@ -68,16 +68,31 @@
             "
             >
               <a href="{{ product.url }}" class="block">
-                <div class="product-image aspect-square overflow-hidden">
+                <div class="product-image relative aspect-square overflow-hidden group">
                   {% if product.featured_image %}
+                    <!-- Main image -->
                     <img
                       src="{{ product.featured_image | image_url: width: 400 }}"
                       alt="{{ product.title }}"
-                      class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      class="
+                        w-full h-full object-cover
+                        {% if product.images[1] %}transition-opacity duration-300 group-hover:opacity-0{% else %}group-hover:scale-110 transition-transform {% endif %}
+                      "
                       loading="lazy"
                       width="{{ product.featured_image.width }}"
                       height="{{ product.featured_image.height }}"
                     >
+                    <!-- Hover image (second product image or same image with different effect) -->
+                    {% if product.images[1] %}
+                      <img
+                        src="{{ product.images[1] | image_url: width: 400 }}"
+                        alt="{{ product.title }}"
+                        class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        loading="lazy"
+                        width="{{ product.images[1].width }}"
+                        height="{{ product.images[1].height }}"
+                      >
+                    {% endif %}
                   {% else %}
                     <div class="w-full h-full bg-gray-200 flex items-center justify-center">
                       <span class="text-gray-400">No image</span>
