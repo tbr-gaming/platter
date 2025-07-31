@@ -4,6 +4,20 @@
   assign show_view_all = section.settings.show_view_all
   assign view_all_text = section.settings.view_all_text | default: 'View All'
   assign view_all_link = section.settings.view_all_link | default: '/collections/all'
+
+  # Get products based on selection method
+  if section.settings.product_selection == 'manual'
+    assign products = section.settings.products
+  elsif section.settings.product_selection == 'collection'
+    assign collection = section.settings.collection
+    if collection != blank
+      assign products = collection.products
+    endif
+  elsif section.settings.product_selection == 'best_selling'
+    # TODO: add best selling products logic - currently just showing all products
+    assign all_collection = collections.all
+    assign products = all_collection.products
+  endif
 -%}
 
 <section id="{{ section_id }}" class="carousel-section">
@@ -19,7 +33,17 @@
       </a>
     {% endif %}
     <!-- Desktop/Mobile:product carousel layout -->
-
+    {% if products != blank %}
+      <div class="product-card">
+        {% for product in products %}
+          {{ product.url }}
+          {{ product.featured_image | image_url: width: 400 }}
+          {{ product.title }}
+          {{ product.price }}
+          {{ product.compare_at_price }}
+        {%  endfor %}
+      </div>
+    {%  endif %}
     <!-- Mobile: view more button -->
   </div>
 </section>
@@ -35,6 +59,39 @@
       "id": "heading",
       "label": "Heading",
       "default": "Carousel Title"
+    },
+    {
+      "type": "select",
+      "id": "product_selection",
+      "label": "Product Selection Method",
+      "options": [
+        {
+          "value": "manual",
+          "label": "Manual Selection"
+        },
+        {
+          "value": "collection",
+          "label": "From Collection"
+        },
+        {
+          "value": "best_selling",
+          "label": "Best Selling Products"
+        }
+      ],
+      "default": "best_selling"
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Select Products",
+      "info": "Choose specific products to display",
+      "limit": 8
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Display products from this collection"
     },
     {
       "type": "checkbox",
