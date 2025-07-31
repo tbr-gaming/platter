@@ -1,9 +1,11 @@
 {%- liquid
   assign section_id = 'product-carousel-' | append: section.id
-  assign heading = section.settings.heading | default: 'Best Sellers'
+  assign heading = section.settings.heading
   assign show_view_all = section.settings.show_view_all
-  assign view_all_text = section.settings.view_all_text | default: 'View All'
-  assign view_all_link = section.settings.view_all_link | default: '/collections/all'
+  assign view_all_text = section.settings.view_all_text
+  assign view_all_link = section.settings.view_all_link
+  assign products_to_show = section.settings.products_to_show
+  assign show_all_products = section.settings.show_all_products
 
   # Get products based on selection method
   if section.settings.product_selection == 'manual'
@@ -18,6 +20,9 @@
     assign all_collection = collections.all
     assign products = all_collection.products
   endif
+
+
+
 -%}
 
 <section id="{{ section_id }}" class="carousel-section">
@@ -41,6 +46,10 @@
           {{ product.title }}
           {{ product.price }}
           {{ product.compare_at_price }}
+
+          {{ products_to_show }}
+          {{ show_all_products }}
+          {{  }}
         {%  endfor %}
       </div>
     {%  endif %}
@@ -92,6 +101,22 @@
       "id": "collection",
       "label": "Collection",
       "info": "Display products from this collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "default": 4,
+      "label": "Number of products to show"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_all_products",
+      "label": "Show all products (ignore limit)",
+      "default": false,
+      "info": "When enabled, displays all available products regardless of the limit above"
     },
     {
       "type": "checkbox",
