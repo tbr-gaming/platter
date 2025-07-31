@@ -22,19 +22,28 @@
 
 <section id="{{ section_id }}" class="carousel-section py-12">
   <!-- container -->
-  <div class="container">
+  <div class="carousel-container">
     <!-- header section: title, view more button (desktop) -->
     <div class="flex justify-between items-center mb-8">
       {% if heading != blank %}
         <div class="flex-1">
-          <h2 class="text-3xl font-bold text-gray-900">{{ heading }}</h2>
+          <h2 class="text-3xl font-bold text-gray-900 font-serif-pro">{{ heading }}</h2>
         </div>
       {% endif %}
       {% if show_view_all %}
         <div>
           <a
             href="{{ view_all_link }}"
-            class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 group text-sm"
+            class="
+              inline-flex
+              items-center
+              text-[#5C553A]
+              hover:underline
+              font-semibold
+              font-poppins
+              group
+              text-sm
+            "
           >
             <span>{{ view_all_text }}</span>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="ml-1 w-4 h-4">
@@ -77,10 +86,8 @@
                 </div>
 
                 <div class="product-info p-4">
-                  <h3 class="product-title text-lg font-semibold text-gray-900 mb-2 line-clamp-2">{{ product.title }}</h3>
-                  <div class="product-price">
-                    <span class="text-gray-900 font-bold text-lg">{{ product.price | money }}</span>
-                  </div>
+                  <div class="product-title">{{ product.title }}</div>
+                  <div class="product-price">{{ product.price | money }}</div>
                 </div>
               </a>
             </div>

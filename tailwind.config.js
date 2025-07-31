@@ -9,7 +9,13 @@ module.exports = {
     "./assets/**/*.js"
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'poppins': ['Poppins', 'sans-serif'],
+        'serif-pro': ['Source Serif Pro', 'serif'],
+        'bebas': ['Bebas Neue', 'sans-serif'],
+      },
+    },
   },
   plugins: [],
-} 
+}
