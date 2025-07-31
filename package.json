@@ -1,0 +1,24 @@
+{
+  "name": "senses",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\" style=\"position: relative;\">\r   <br>\r     <img src=\"./assets/shoppy-x-ray.svg\" alt=\"logo\" width=\"200\">\r   <br>\r   Shopify Skeleton Theme\r </h1>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "tailwindcss -i ./src/input.css -o ./assets/tailwind.css --watch",
+    "build:css:prod": "tailwindcss -i ./src/input.css -o ./assets/tailwind.css --minify",
+    "dev": "concurrently \"npm run build:css\" \"shopify theme dev\"",
+    "dev:css": "npm run build:css",
+    "dev:shopify": "shopify theme dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "concurrently": "^9.2.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17"
+  }
+}
