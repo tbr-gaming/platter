@@ -1214,6 +1214,18 @@ video {
   transition-duration: 300ms;
 }
 
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  /* Internet Explorer 10+ */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+  /* Safari and Chrome */
+}
+
 .hover\:underline:hover{
   text-decoration-line: underline;
 }
@@ -1285,5 +1297,17 @@ video {
   .md\:text-xs{
     font-size: 0.75rem;
     line-height: 1rem;
+  }
+
+  .md\:scrollbar-hide {
+    -ms-overflow-style: none;
+    /* Internet Explorer 10+ */
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  .md\:scrollbar-hide::-webkit-scrollbar {
+    display: none;
+    /* Safari and Chrome */
   }
 }
