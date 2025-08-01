@@ -13,11 +13,14 @@
     "product-carousel-2": {
       "type": "product-carousel",
       "settings": {
-        "heading": "Best Sellers",
-        "show_view_all": true,
-        "view_all_text": "Shop All Best Sellers",
-        "view_all_link": "/collections/all",
-        "product_selection": "best_selling",
+        "heading": "Boards",
+        "show_view_all": false,
+        "product_selection": "manual",
+        "products": [
+          "the-3p-fulfilled-snowboard",
+          "the-collection-snowboard-hydrogen",
+          "the-collection-snowboard-liquid"
+        ],
       }
     }
   },

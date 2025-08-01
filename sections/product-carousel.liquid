@@ -82,7 +82,8 @@
                 flex-shrink-0
                 w-full
                 md:w-64
-                {% if forloop.index > 4 %}hidden md:block{% endif %}
+                {% if forloop.index > 4 %}hidden{% endif %}
+                 md:block
               "
             >
               <a href="{{ product.url }}" class="block">
@@ -227,6 +228,14 @@
       this.setupMobileToggle();
     }
 
+    displayTrackScrollbar() {
+      if (this.carousel.scrollWidth <= this.carousel.clientWidth) {
+        this.scrollbarTrack.style.display = 'none';
+      } else {
+        this.scrollbarTrack.style.display = 'block';
+      }
+    }
+
     // set thumb width based on visible vs total content ratio
     setThumbWidth() {
       const thumbWidthRatio = this.carousel.clientWidth / this.carousel.scrollWidth;
@@ -259,6 +268,9 @@
       // get scrollbar track width
       const scrollbarTrackWidth = this.scrollbarTrack.clientWidth;
 
+      // display scrollbar track if the content is scrollable
+      this.displayTrackScrollbar();
+
       // set thumb width
       this.setThumbWidth();
 
@@ -267,6 +279,7 @@
 
       // resize thumb width on window resize
       window.addEventListener('resize', () => {
+        this.displayTrackScrollbar();
         this.setThumbWidth();
         this.updateThumbPosition();
       });
@@ -336,7 +349,6 @@
         isDragging = true;
         wasSwiping = false;
 
-        console.log('mousedown - X:', startX, 'Y:', startY, 'ScrollLeft:', startScrollLeft);
         e.preventDefault();
       });
 
@@ -345,14 +357,11 @@
       this.carousel.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
 
-        console.log('mousemove detected', isDragging);
-
         const currentX = e.clientX;
         const currentY = e.clientY;
         const deltaX = startX - currentX;
         const deltaY = startY - currentY;
 
-        console.log('mousemove - deltaX:', deltaX, 'deltaY:', deltaY);
 
         // Only handle horizontal swipes (prevent vertical scrolling interference)
         if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
@@ -363,12 +372,27 @@
           const newScrollLeft = startScrollLeft + deltaX;
           this.carousel.scrollLeft = newScrollLeft;
 
-          console.log('Scrolling carousel to:', newScrollLeft);
-
           // Update thumb position
           this.updateThumbPosition();
         }
       });
+
+      // Bugfix: Global mouse up listener to prevent mouse getting stuck
+      document.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+        }
+      });
+
+      // Bugfix: Prevent clicks when swiping
+      this.carousel.addEventListener('click', (e) => {
+        if (wasSwiping) {
+          e.preventDefault();
+          e.stopPropagation();
+          wasSwiping = false;
+          return false;
+        }
+      }, true);
     }
 
     setupMobileToggle() {
@@ -388,9 +412,11 @@
         if (index >= 4) {
           // Products after the first 4
           if (isExpanded) {
+            // Collapse: hide on mobile, show on desktop
             card.classList.add('hidden');
-            card.classList.remove('md:block');
+            card.classList.add('md:block');
           } else {
+            // Expand: show on both mobile and desktop
             card.classList.remove('hidden');
             card.classList.add('md:block');
           }
