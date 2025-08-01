@@ -222,19 +222,34 @@
     }
 
     init() {
-      this.mouseevents();
+      this.mouseEvents();
+      this.swipeEvents();
       this.setupMobileToggle();
     }
 
+    // set thumb width based on visible vs total content ratio
     setThumbWidth() {
-      // Helper to set thumb width based on visible vs total content ratio
       const thumbWidthRatio = this.carousel.clientWidth / this.carousel.scrollWidth;
       const thumbWidth = Math.max(30, this.scrollbarTrack.clientWidth * thumbWidthRatio);
       this.scrollbarThumb.style.width = thumbWidth + 'px';
     }
 
+    // Update thumb position based on carousel scroll
+    updateThumbPosition() {
+      if (!this.scrollbarThumb || !this.scrollbarTrack) return;
+
+      const carouselScrollableWidth = this.carousel.scrollWidth - this.carousel.clientWidth;
+      const trackScrollableWidth = this.scrollbarTrack.clientWidth - this.scrollbarThumb.clientWidth;
+
+      if (carouselScrollableWidth > 0) {
+        const scrollRatio = this.carousel.scrollLeft / carouselScrollableWidth;
+        const thumbLeft = scrollRatio * trackScrollableWidth;
+        this.scrollbarThumb.style.left = thumbLeft + 'px';
+      }
+    }
+
     // mouse events for the scrollbar thumb
-    mouseevents() {
+    mouseEvents() {
       if (!this.scrollbarThumb || !this.scrollbarTrack) return;;
       // get carousel dimensions
       const carouselVisibleWidth = this.carousel.clientWidth; // Visible width
@@ -247,8 +262,14 @@
       // set thumb width
       this.setThumbWidth();
 
+      // Initialize thumb position
+      this.updateThumbPosition();
+
       // resize thumb width on window resize
-      window.addEventListener('resize', this.setThumbWidth);
+      window.addEventListener('resize', () => {
+        this.setThumbWidth();
+        this.updateThumbPosition();
+      });
 
       let draggable = false;
 
@@ -280,6 +301,9 @@
             const carouselScrollableWidth = this.carousel.scrollWidth - this.carousel.clientWidth;
 
             this.carousel.scrollLeft = scrollRatio * carouselScrollableWidth;
+
+            // Update thumb position
+            this.updateThumbPosition();
           }
         });
       });
@@ -288,6 +312,62 @@
         draggable = false;
         this.scrollbarThumb.classList.remove('scroll-bar-thumb-dragging');
         this.scrollbarThumb.style.cursor = 'grab';
+      });
+    }
+
+    // swipe events
+    swipeEvents() {
+      if (!this.carousel) return;
+
+      let startX = 0;
+      let startY = 0;
+      let startScrollLeft = 0;
+      let isDragging = false;
+      let startTime = 0;
+      let wasSwiping = false;
+
+      this.carousel.addEventListener('mousedown', (e) => {
+        if (isDragging) return;
+
+        startX = e.clientX;
+        startY = e.clientY;
+        startScrollLeft = this.carousel.scrollLeft;
+        startTime = Date.now();
+        isDragging = true;
+        wasSwiping = false;
+
+        console.log('mousedown - X:', startX, 'Y:', startY, 'ScrollLeft:', startScrollLeft);
+        e.preventDefault();
+      });
+
+
+      // Mouse move events
+      this.carousel.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        console.log('mousemove detected', isDragging);
+
+        const currentX = e.clientX;
+        const currentY = e.clientY;
+        const deltaX = startX - currentX;
+        const deltaY = startY - currentY;
+
+        console.log('mousemove - deltaX:', deltaX, 'deltaY:', deltaY);
+
+        // Only handle horizontal swipes (prevent vertical scrolling interference)
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+          // Mark that we're swiping
+          wasSwiping = true;
+
+          // Calculate new scroll position
+          const newScrollLeft = startScrollLeft + deltaX;
+          this.carousel.scrollLeft = newScrollLeft;
+
+          console.log('Scrolling carousel to:', newScrollLeft);
+
+          // Update thumb position
+          this.updateThumbPosition();
+        }
       });
     }
 
