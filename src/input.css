@@ -13,9 +13,23 @@
     display: none;  /* Safari and Chrome */
   }
 
+  .scroll-bar-track {
+    position: relative;
+  }
+
+  .scroll-bar-track:hover {
+    cursor: pointer;
+  }
+
+  .scroll-bar-thumb {
+    position: absolute;
+    top: 0;
+    cursor: pointer;
+  }
+
   .scroll-bar-track:hover {
     .scroll-bar-thumb {
-      @apply bottom-[-1px] h-1.5;
+      @apply top-[-1px] h-1.5;
     }
   }
 }

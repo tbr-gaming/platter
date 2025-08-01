@@ -65,20 +65,13 @@
     <div class="relative">
       <div
         class="
+          product-carousel
           grid grid-cols-2 gap-4
-          md:flex md:gap-6 md:overflow-x-auto md:pb-4 md:scrollbar-hide
+          md:flex md:gap-6 md:pb-4 product-carousel-scroll
+          overflow-hidden
         "
         id="product-carousel-{{ section.id }}"
       >
-        <!-- Custom scrollbar track -->
-        <div class="scroll-bar-track hidden md:block absolute bottom-0 left-0 right-0 h-1 bg-[#DDD6D7] rounded-full custom-scrollbar-track">
-          <!-- Custom scrollbar thumb -->
-          <div
-            class="scroll-bar-thumb h-1 bg-[#231F20] rounded-full cursor-pointer absolute bottom-0"
-            id="scrollbar-thumb-{{ section.id }}"
-            style="width: 20%; left: 0%;"
-          ></div>
-        </div>
         {% if products != blank %}
           {% for product in products %}
             <div
@@ -193,6 +186,14 @@
           {% endfor %}
         {% endif %}
       </div>
+      <!-- Custom scrollbar track -->
+      <div class="scroll-bar-track hidden md:block h-1 bg-[#DDD6D7] rounded-full">
+        <!-- Custom scrollbar thumb -->
+        <div
+          class="scroll-bar-thumb h-1 bg-[#231F20] rounded-full cursor-pointer"
+          id="scrollbar-thumb-{{ section.id }}"
+        ></div>
+      </div>
     </div>
     <!-- Mobile: view more button -->
     {% if products.size > 4 %}
@@ -239,6 +240,101 @@
       showMoreBtn.setAttribute('data-expanded', 'true');
     }
   }
+
+  class ProductCarousel {
+    constructor(sectionId) {
+      this.sectionId = sectionId;
+      this.carouselContainer = document.getElementById('product-carousel-' + sectionId);
+      this.carousel = this.carouselContainer.querySelector('.product-carousel');
+      this.scrollbarThumb = document.getElementById('scrollbar-thumb-' + sectionId);
+      this.scrollbarTrack = this.scrollbarThumb?.parentElement;
+      this.init();
+    }
+
+    init() {
+      console.log('ProductCarousel initialized', this.sectionId);
+      console.log('Thumb', this.scrollbarThumb);
+      console.log('Track', this.scrollbarTrack);
+
+
+      // get carousel dimensions
+      const carouselVisibleWidth = this.carousel.clientWidth; // Visible width (872px)
+      const carouselTotalWidth = this.carousel.scrollWidth; // Total content width
+      const carouselScrollableWidth = carouselTotalWidth - carouselVisibleWidth; // How much can be scrolled
+
+      console.log('Carousel visible width:', carouselVisibleWidth);
+      console.log('Carousel total width:', carouselTotalWidth);
+      console.log('Carousel scrollable width:', carouselScrollableWidth);
+
+      // get scrollbar track width
+      const scrollbarTrackWidth = this.scrollbarTrack.clientWidth;
+      console.log('Scrollbar track width', scrollbarTrackWidth);
+
+      // Calculate thumb width based on visible vs total content ratio
+      const thumbWidthRatio = carouselVisibleWidth / carouselTotalWidth;
+      const thumbWidth = Math.max(30, scrollbarTrackWidth * thumbWidthRatio);
+      this.scrollbarThumb.style.width = thumbWidth + 'px';
+
+
+      this.carousel.style.position = 'relative';
+      this.carousel.style.left = '0';
+
+
+      let draggable = false;
+      // make thumb draggable along the track
+      this.scrollbarThumb.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        this.scrollbarThumb.style.cursor = 'grabbing';
+
+        draggable = true;
+
+        document.addEventListener('mousemove', (e) => {
+          if (draggable) {
+            // Calculate the new left position relative to the track
+            const trackRect = this.scrollbarTrack.getBoundingClientRect();
+            const thumbRect = this.scrollbarThumb.getBoundingClientRect();
+            let newLeft = e.clientX - trackRect.left - thumbRect.width / 2;
+
+            // Set limits so the thumb stays within the track
+            const minLeft = 0;
+            const maxLeft = trackRect.width - thumbRect.width;
+            newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
+
+            this.scrollbarThumb.style.left = newLeft + 'px';
+
+            // Calculate the scroll ratio and set carousel scrollLeft accordingly
+            const scrollRatio = newLeft / maxLeft;
+            const carouselScrollableWidth = this.carousel.scrollWidth - this.carousel.clientWidth;
+
+            console.log(scrollRatio);
+            console.log(carouselScrollableWidth);
+            this.carousel.scrollLeft = scrollRatio * carouselScrollableWidth;
+          }
+        });
+
+      });
+
+
+      document.addEventListener('mouseup', () => {
+        draggable = false;
+        this.scrollbarThumb.style.cursor = 'grab';
+      });
+      {% comment %} this.scrollbarThumb.addEventListener('click', () => {
+        const shift = '20%';
+
+        this.scrollbarThumb.style.left = shift;
+        // Scroll the carousel by 20% of its total scrollable width
+        const scrollAmount = this.carousel.scrollWidth * 0.2;
+        this.carousel.scrollLeft += scrollAmount;
+      }); {% endcomment %}
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    new ProductCarousel('{{ section.id }}');
+  });
+
 </script>
 
 {% schema %}
