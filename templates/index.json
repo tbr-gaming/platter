@@ -1,9 +1,5 @@
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "settings": {}
-    },
     "product-carousel": {
       "type": "product-carousel",
       "settings": {
@@ -16,7 +12,6 @@
     }
   },
   "order": [
-    "main",
     "product-carousel"
   ]
 }

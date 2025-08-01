@@ -27,7 +27,7 @@
     <div class="flex justify-between items-center mb-8">
       {% if heading != blank %}
         <div class="flex-1">
-          <h2 class="text-3xl font-bold text-gray-900 font-serif-pro">{{ heading }}</h2>
+          <h2 class="text-center md:text-left text-[28px] md:text-[40px] font-bold text-gray-900 font-serif-pro leading-[140%] tracking-[0.03em]">{{ heading }}</h2>
         </div>
       {% endif %}
       {% if show_view_all %}
@@ -49,7 +49,6 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="ml-1 w-4 h-4">
               <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>
-
           </a>
         </div>
       {% endif %}
@@ -62,12 +61,12 @@
           {% for product in products %}
             <div class="
               product-card
+              relative
               flex-shrink-0
               w-full
               md:w-64
               {% if forloop.index > 4 %}hidden md:block{% endif %}
-            "
-            >
+            ">
               <a href="{{ product.url }}" class="block">
                 <div class="product-image relative aspect-square overflow-hidden group">
                   {% if product.featured_image %}
@@ -100,17 +99,26 @@
                     </div>
                   {% endif %}
                 </div>
+                <!-- add best seller badge -->
+                {% if section.settings.product_selection == 'best_selling' %}
+                  <div class="absolute top-2 left-2 bg-white rounded-full font-bebas font-normal text-[8px] md:text-[10px] leading-[100%] px-2 py-1 border border-black">Best Seller</div>
+                {% endif %}
+
+                <!-- add save 15% badge -->
+                {% if product.tags contains 'Save 15%' %}
+                  <div class="absolute top-2 right-2 bg-[#5C7962] rounded-full font-bebas font-normal text-[8px] md:text-[10px] leading-[100%] px-2 py-1 border border-black text-white">Save 15%</div>
+                {% endif %}
 
                 <div class="product-info p-3">
-                  <div class="product-title">{{ product.title }}</div>
-                  <div class="product-rating">
-                    <div class="star-rating">
+                  <div class="font-normal text-[#1C1D1D] font-bebas py-1 text-base md:text-lg !leading-[1]">{{ product.title }}</div>
+                  <div class="text-[11px] md:text-xs font-normal text-[#1C1D1D] font-poppins leading-none py-1 flex items-center gap-1">
+                    <div class="flex items-center gap-0.5">
                       {% if forloop.first %}
                         {% assign rating = 4.4 %}
                       {% else %}
                         {% assign rating = 5 %}
                       {% endif %}
-                      <svg class="stars" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 24" fill="currentColor" data-rating="{{ rating }}">
+                      <svg class="w-12 md:w-16 h-4 text-white flex-shrink-0 drop-shadow-[0_0_0.5px_black]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 24" fill="currentColor" data-rating="{{ rating }}">
                         {% for i in (1..5) %}
                           <!--
                             Calculate the x and y positions for each star in the SVG.
@@ -140,7 +148,7 @@
                     </div>
                     <span>1,234 Reviews</span>
                   </div>
-                  <div class="product-price">{{ product.price | money }}</div>
+                  <div class="text-base font-medium text-[#1C1D1D] font-poppins leading-none py-1">{{ product.price | money }}</div>
                 </div>
               </a>
             </div>

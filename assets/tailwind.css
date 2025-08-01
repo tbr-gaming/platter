@@ -614,65 +614,6 @@ video {
   }
 }
 
-.product-title{
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-  font-family: Bebas Neue, sans-serif;
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-  font-weight: 400;
-  line-height: 1;
-  --tw-text-opacity: 1;
-  color: rgb(28 29 29 / var(--tw-text-opacity, 1));
-}
-
-.product-price{
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-  font-family: Poppins, sans-serif;
-  font-size: 1rem;
-  line-height: 1.5rem;
-  font-weight: 500;
-  line-height: 1;
-  --tw-text-opacity: 1;
-  color: rgb(28 29 29 / var(--tw-text-opacity, 1));
-}
-
-.product-image img{
-  max-width: none;
-}
-
-.product-rating{
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-  font-family: Poppins, sans-serif;
-  font-size: 0.75rem;
-  line-height: 1rem;
-  font-weight: 400;
-  line-height: 1;
-  --tw-text-opacity: 1;
-  color: rgb(28 29 29 / var(--tw-text-opacity, 1));
-}
-
-.star-rating{
-  display: flex;
-  align-items: center;
-  gap: 0.125rem;
-}
-
-.stars{
-  height: 1rem;
-  width: 4rem;
-  flex-shrink: 0;
-  --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
-  --tw-drop-shadow: drop-shadow(0 0 0.5px black);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-
 .visible{
   visibility: visible;
 }
@@ -695,6 +636,18 @@ video {
 
 .inset-0{
   inset: 0px;
+}
+
+.left-2{
+  left: 0.5rem;
+}
+
+.right-2{
+  right: 0.5rem;
+}
+
+.top-2{
+  top: 0.5rem;
 }
 
 .mx-auto{
@@ -777,6 +730,14 @@ video {
   height: 100%;
 }
 
+.w-12{
+  width: 3rem;
+}
+
+.w-16{
+  width: 4rem;
+}
+
 .w-4{
   width: 1rem;
 }
@@ -851,6 +812,18 @@ video {
   justify-content: space-between;
 }
 
+.gap-0{
+  gap: 0px;
+}
+
+.gap-0\.5{
+  gap: 0.125rem;
+}
+
+.gap-1{
+  gap: 0.25rem;
+}
+
 .gap-4{
   gap: 1rem;
 }
@@ -883,9 +856,19 @@ video {
   border-width: 1px;
 }
 
+.border-black{
+  --tw-border-opacity: 1;
+  border-color: rgb(0 0 0 / var(--tw-border-opacity, 1));
+}
+
 .bg-\[\#1C1D1D\]{
   --tw-bg-opacity: 1;
   background-color: rgb(28 29 29 / var(--tw-bg-opacity, 1));
+}
+
+.bg-\[\#5C7962\]{
+  --tw-bg-opacity: 1;
+  background-color: rgb(92 121 98 / var(--tw-bg-opacity, 1));
 }
 
 .bg-blue-600{
@@ -980,8 +963,16 @@ video {
   padding-bottom: 1rem;
 }
 
+.text-left{
+  text-align: left;
+}
+
 .text-center{
   text-align: center;
+}
+
+.font-bebas{
+  font-family: Bebas Neue, sans-serif;
 }
 
 .font-poppins{
@@ -1000,6 +991,18 @@ video {
 .text-3xl{
   font-size: 1.875rem;
   line-height: 2.25rem;
+}
+
+.text-\[11px\]{
+  font-size: 11px;
+}
+
+.text-\[28px\]{
+  font-size: 28px;
+}
+
+.text-\[8px\]{
+  font-size: 8px;
 }
 
 .text-base{
@@ -1051,12 +1054,29 @@ video {
   font-style: italic;
 }
 
+.\!leading-\[1\]{
+  line-height: 1 !important;
+}
+
+.leading-\[100\%\]{
+  line-height: 100%;
+}
+
 .leading-\[140\%\]{
   line-height: 140%;
 }
 
+.leading-none{
+  line-height: 1;
+}
+
 .tracking-\[0\.03em\]{
   letter-spacing: 0.03em;
+}
+
+.text-\[\#1C1D1D\]{
+  --tw-text-opacity: 1;
+  color: rgb(28 29 29 / var(--tw-text-opacity, 1));
 }
 
 .text-\[\#5C553A\]{
@@ -1145,6 +1165,11 @@ video {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 
+.drop-shadow-\[0_0_0\.5px_black\]{
+  --tw-drop-shadow: drop-shadow(0 0 0.5px black);
+  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
 .filter{
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
@@ -1220,6 +1245,10 @@ video {
     display: none;
   }
 
+  .md\:w-16{
+    width: 4rem;
+  }
+
   .md\:w-64{
     width: 16rem;
   }
@@ -1234,5 +1263,27 @@ video {
 
   .md\:pb-4{
     padding-bottom: 1rem;
+  }
+
+  .md\:text-left{
+    text-align: left;
+  }
+
+  .md\:text-\[10px\]{
+    font-size: 10px;
+  }
+
+  .md\:text-\[40px\]{
+    font-size: 40px;
+  }
+
+  .md\:text-lg{
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  .md\:text-xs{
+    font-size: 0.75rem;
+    line-height: 1rem;
   }
 }
