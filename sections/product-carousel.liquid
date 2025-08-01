@@ -226,6 +226,13 @@
       this.setupMobileToggle();
     }
 
+    setThumbWidth() {
+      // Helper to set thumb width based on visible vs total content ratio
+      const thumbWidthRatio = this.carousel.clientWidth / this.carousel.scrollWidth;
+      const thumbWidth = Math.max(30, this.scrollbarTrack.clientWidth * thumbWidthRatio);
+      this.scrollbarThumb.style.width = thumbWidth + 'px';
+    }
+
     // mouse events for the scrollbar thumb
     mouseevents() {
       if (!this.scrollbarThumb || !this.scrollbarTrack) return;;
@@ -237,10 +244,11 @@
       // get scrollbar track width
       const scrollbarTrackWidth = this.scrollbarTrack.clientWidth;
 
-      // Calculate thumb width based on visible vs total content ratio
-      const thumbWidthRatio = carouselVisibleWidth / carouselTotalWidth;
-      const thumbWidth = Math.max(30, scrollbarTrackWidth * thumbWidthRatio);
-      this.scrollbarThumb.style.width = thumbWidth + 'px';
+      // set thumb width
+      this.setThumbWidth();
+
+      // resize thumb width on window resize
+      window.addEventListener('resize', this.setThumbWidth);
 
       let draggable = false;
 
