@@ -29,7 +29,10 @@
 
   .scroll-bar-track:hover {
     .scroll-bar-thumb {
-      @apply top-[-1px] h-1.5;
+      @apply top-[-1px] h-1.5 cursor-grab;
     }
+  }
+  .scroll-bar-thumb-dragging {
+    @apply top-[-1px] h-1.5;
   }
 }

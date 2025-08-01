@@ -66,9 +66,10 @@
       <div
         class="
           product-carousel
-          grid grid-cols-2 gap-4
-          md:flex md:gap-6 md:pb-4 product-carousel-scroll
           overflow-hidden
+          relative
+          grid grid-cols-2 gap-4
+          md:flex md:gap-6 md:pb-4 product-carousel-scroll md:left-0
         "
         id="product-carousel-{{ section.id }}"
       >
@@ -191,7 +192,6 @@
         <!-- Custom scrollbar thumb -->
         <div
           class="scroll-bar-thumb h-1 bg-[#231F20] rounded-full cursor-pointer"
-          id="scrollbar-thumb-{{ section.id }}"
         ></div>
       </div>
     </div>
@@ -242,49 +242,41 @@
   }
 
   class ProductCarousel {
-    constructor(sectionId) {
-      this.sectionId = sectionId;
-      this.carouselContainer = document.getElementById('product-carousel-' + sectionId);
-      this.carousel = this.carouselContainer.querySelector('.product-carousel');
-      this.scrollbarThumb = document.getElementById('scrollbar-thumb-' + sectionId);
-      this.scrollbarTrack = this.scrollbarThumb?.parentElement;
+    constructor(container) {
+      this.container = container;
+      this.carousel = this.container.querySelector('.product-carousel');
+      this.scrollbarThumb = this.container.querySelector('.scroll-bar-thumb');
+      this.scrollbarTrack = this.container.querySelector('.scroll-bar-track');
       this.init();
     }
 
     init() {
-      console.log('ProductCarousel initialized', this.sectionId);
-      console.log('Thumb', this.scrollbarThumb);
-      console.log('Track', this.scrollbarTrack);
+      if (!this.scrollbarThumb || !this.scrollbarTrack) return;;
+      this.mouseevents();
+    }
 
-
+    // mouse events for the scrollbar thumb
+    mouseevents() {
       // get carousel dimensions
-      const carouselVisibleWidth = this.carousel.clientWidth; // Visible width (872px)
+      const carouselVisibleWidth = this.carousel.clientWidth; // Visible width
       const carouselTotalWidth = this.carousel.scrollWidth; // Total content width
       const carouselScrollableWidth = carouselTotalWidth - carouselVisibleWidth; // How much can be scrolled
 
-      console.log('Carousel visible width:', carouselVisibleWidth);
-      console.log('Carousel total width:', carouselTotalWidth);
-      console.log('Carousel scrollable width:', carouselScrollableWidth);
-
       // get scrollbar track width
       const scrollbarTrackWidth = this.scrollbarTrack.clientWidth;
-      console.log('Scrollbar track width', scrollbarTrackWidth);
 
       // Calculate thumb width based on visible vs total content ratio
       const thumbWidthRatio = carouselVisibleWidth / carouselTotalWidth;
       const thumbWidth = Math.max(30, scrollbarTrackWidth * thumbWidthRatio);
       this.scrollbarThumb.style.width = thumbWidth + 'px';
 
-
-      this.carousel.style.position = 'relative';
-      this.carousel.style.left = '0';
-
-
       let draggable = false;
+
       // make thumb draggable along the track
       this.scrollbarThumb.addEventListener('mousedown', (e) => {
         e.preventDefault();
-        e.stopPropagation();
+        e.stopPropagation(); // prevent the event from bubbling up to parent elements
+        this.scrollbarThumb.classList.add('scroll-bar-thumb-dragging'); // visually indicate that the thumb is being dragged
         this.scrollbarThumb.style.cursor = 'grabbing';
 
         draggable = true;
@@ -307,32 +299,24 @@
             const scrollRatio = newLeft / maxLeft;
             const carouselScrollableWidth = this.carousel.scrollWidth - this.carousel.clientWidth;
 
-            console.log(scrollRatio);
-            console.log(carouselScrollableWidth);
             this.carousel.scrollLeft = scrollRatio * carouselScrollableWidth;
           }
         });
-
       });
-
 
       document.addEventListener('mouseup', () => {
         draggable = false;
+        this.scrollbarThumb.classList.remove('scroll-bar-thumb-dragging');
         this.scrollbarThumb.style.cursor = 'grab';
       });
-      {% comment %} this.scrollbarThumb.addEventListener('click', () => {
-        const shift = '20%';
-
-        this.scrollbarThumb.style.left = shift;
-        // Scroll the carousel by 20% of its total scrollable width
-        const scrollAmount = this.carousel.scrollWidth * 0.2;
-        this.carousel.scrollLeft += scrollAmount;
-      }); {% endcomment %}
     }
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    new ProductCarousel('{{ section.id }}');
+    const carouselContainers = document.querySelectorAll('.carousel-container');
+    carouselContainers.forEach((container) => {
+      new ProductCarousel(container);
+    });
   });
 
 </script>

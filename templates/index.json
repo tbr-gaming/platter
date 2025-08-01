@@ -9,9 +9,20 @@
         "view_all_link": "/collections/all",
         "product_selection": "best_selling",
       }
+    },
+    "product-carousel-2": {
+      "type": "product-carousel",
+      "settings": {
+        "heading": "Best Sellers",
+        "show_view_all": true,
+        "view_all_text": "Shop All Best Sellers",
+        "view_all_link": "/collections/all",
+        "product_selection": "best_selling",
+      }
     }
   },
   "order": [
-    "product-carousel"
+    "product-carousel",
+    "product-carousel-2"
   ]
 }
