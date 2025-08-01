@@ -1,0 +1,516 @@
+{%- liquid
+  assign section_id = 'product-carousel-' | append: section.id
+  assign heading = section.settings.heading
+  assign show_view_all = section.settings.show_view_all
+  assign view_all_text = section.settings.view_all_text
+  assign view_all_link = section.settings.view_all_link
+
+  # Get products based on selection method
+  if section.settings.product_selection == 'manual'
+    assign products = section.settings.products
+  elsif section.settings.product_selection == 'collection'
+    assign collection = section.settings.collection
+    if collection != blank
+      assign products = collection.products
+    endif
+  elsif section.settings.product_selection == 'best_selling'
+    assign best_selling_collection = collections['best-sellers']
+    assign products = best_selling_collection.products
+  endif
+-%}
+
+<section id="{{ section_id }}" class="carousel-section py-12">
+  <!-- container -->
+  <div class="carousel-container">
+    <!-- header section: title, view more button (desktop) -->
+    <div class="flex justify-between items-center mb-8">
+      {% if heading != blank %}
+        <div class="flex-1">
+          <h2 class="text-center md:text-left text-[28px] md:text-[40px] font-bold text-gray-900 font-serif-pro leading-[140%] tracking-[0.03em]">
+            {{ heading }}
+          </h2>
+        </div>
+      {% endif %}
+      {% if show_view_all %}
+        <div class="hidden md:block">
+          <a
+            href="{{ view_all_link }}"
+            class="
+              inline-flex
+              items-center
+              text-[#5C553A]
+              hover:underline
+              font-semibold
+              font-poppins
+              group
+              text-sm
+            "
+          >
+            <span>{{ view_all_text }}</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="2.5"
+              stroke="currentColor"
+              class="ml-1 w-4 h-4"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
+          </a>
+        </div>
+      {% endif %}
+    </div>
+    <!-- Desktop/Mobile:product carousel layout -->
+    <div class="relative">
+      <div
+        class="
+          product-carousel
+          overflow-hidden
+          relative
+          grid grid-cols-2 gap-4
+          md:flex md:gap-6 md:pb-4 product-carousel-scroll md:left-0
+        "
+        id="product-carousel-{{ section.id }}"
+      >
+        {% if products != blank %}
+          {% for product in products %}
+            <div
+              class="
+                product-card
+                relative
+                flex-shrink-0
+                w-full
+                md:w-64
+                {% if forloop.index > 4 %}hidden{% endif %}
+                 md:block
+              "
+            >
+              <a href="{{ product.url }}" class="block">
+                <div class="product-image relative aspect-square overflow-hidden group">
+                  {% if product.featured_image %}
+                    <!-- Main image -->
+                    <img
+                      src="{{ product.featured_image | image_url: width: 400 }}"
+                      alt="{{ product.title }}"
+                      class="
+                        w-full h-full object-cover rounded-lg
+                        {% if product.images[1] %}transition-opacity duration-300 group-hover:opacity-0{% else %}group-hover:scale-110 transition-transform {% endif %}
+                      "
+                      loading="lazy"
+                      width="{{ product.featured_image.width }}"
+                      height="{{ product.featured_image.height }}"
+                    >
+                    <!-- Hover image (second product image or same image with different effect) -->
+                    {% if product.images[1] %}
+                      <img
+                        src="{{ product.images[1] | image_url: width: 400 }}"
+                        alt="{{ product.title }}"
+                        class="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"
+                        loading="lazy"
+                        width="{{ product.images[1].width }}"
+                        height="{{ product.images[1].height }}"
+                      >
+                    {% endif %}
+                  {% else %}
+                    <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                      <span class="text-gray-400">{{ 'sections.product_carousel.no_image' | t }}</span>
+                    </div>
+                  {% endif %}
+                </div>
+                <!-- add best seller badge -->
+                {% if section.settings.product_selection == 'best_selling' %}
+                  <div class="absolute top-2 left-2 bg-white rounded-full font-bebas font-normal text-[8px] md:text-[10px] leading-[100%] px-2 py-1 border border-black">
+                    Best Seller
+                  </div>
+                {% endif %}
+
+                <!-- add save 15% badge -->
+                {% if product.tags contains 'Save 15%' %}
+                  <div class="absolute top-2 right-2 bg-[#5C7962] rounded-full font-bebas font-normal text-[8px] md:text-[10px] leading-[100%] px-2 py-1 border border-black text-white">
+                    Save 15%
+                  </div>
+                {% endif %}
+
+                <div class="product-info p-3">
+                  <div class="font-normal text-custom-gray font-bebas py-1 text-base md:text-lg !leading-[1]">
+                    {{ product.title }}
+                  </div>
+                  <div class="text-[11px] md:text-xs font-normal text-custom-gray font-poppins leading-none py-1 flex items-center gap-1">
+                    <div class="flex items-center gap-0.5">
+                      {% if forloop.first %}
+                        {% assign rating = 4.4 %}
+                      {% else %}
+                        {% assign rating = 5 %}
+                      {% endif %}
+                      <svg
+                        class="w-12 md:w-16 h-4 text-white flex-shrink-0 drop-shadow-[0_0_0.5px_black]"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 120 24"
+                        fill="currentColor"
+                        data-rating="{{ rating }}"
+                      >
+                        {% for i in (1..5) %}
+                          <!--
+                            Calculate the x and y positions for each star in the SVG.
+                            x_pos and y_pos are used to position each star horizontally in the row,
+                            with a fixed offset for proper spacing and alignment.
+                          -->
+                          {% assign x_pos = i | minus: 1 | times: 24 | plus: 11.48 %}
+                          {% assign y_pos = i | minus: 1 | times: 24 | plus: 6.982 %}
+
+                          {% if rating >= i %}
+                            <!-- Full star -->
+                            <path d="M{{ x_pos }} 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L{{ y_pos }} 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L{{ x_pos }} 3.5Z" fill="black"/>
+                          {% assign prev_star = i | minus: 1 %}
+                          {% elsif rating > prev_star %}
+                            <!-- Partial star -->
+                            <!-- Calculate the fractional fill for a partial star (e.g., 0.4 for 40% filled) -->
+                            {% assign partial_fill = rating | minus: i | plus: 1 %}
+                            {% assign partial_fill = partial_fill | times: 100 %}
+                            <path d="M{{ x_pos }} 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L{{ y_pos }} 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L{{ x_pos }} 3.5Z" fill="black" style="clip-path: inset(0 {{ 100 | minus: partial_fill }}% 0 0);"/>
+                            <path d="M{{ x_pos }} 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L{{ y_pos }} 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L{{ x_pos }} 3.5Z" fill="none" stroke="black" stroke-width="1.5"/>
+                          {% else %}
+                            <!-- Empty star -->
+                            <path d="M{{ x_pos }} 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L{{ y_pos }} 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L{{ x_pos }} 3.5Z" fill="white" stroke="black" stroke-width="1.5"/>
+                          {% endif %}
+                        {% endfor %}
+                      </svg>
+                    </div>
+                    <span>1,234 Reviews</span>
+                  </div>
+                  <div class="text-base font-medium text-custom-gray font-poppins leading-none py-1">
+                    {{ product.price | money }}
+                  </div>
+                </div>
+              </a>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+      <!-- Custom scrollbar track -->
+      <div class="scroll-bar-track hidden md:block h-1 bg-[#DDD6D7] rounded-full">
+        <!-- Custom scrollbar thumb -->
+        <div
+          class="scroll-bar-thumb h-1 bg-[#231F20] rounded-full cursor-pointer"
+        ></div>
+      </div>
+    </div>
+    <!-- Mobile: view more button -->
+    {% if products.size > 4 %}
+      <div class="md:hidden text-center mt-6">
+        <button
+          id="show-more-btn-{{ section.id }}"
+          class="show-more-btn bg-custom-gray text-white px-6 py-3 rounded-full font-semibold w-full font-poppins text-base leading-[140%] tracking-[0.03em]"
+        >
+          <span id="btn-text-{{ section.id }}">{{ 'sections.product_carousel.show_more_products' | t }}</span>
+        </button>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+  class ProductCarousel {
+    constructor(container) {
+      this.container = container;
+      this.carousel = this.container.querySelector('.product-carousel');
+      this.scrollbarThumb = this.container.querySelector('.scroll-bar-thumb');
+      this.scrollbarTrack = this.container.querySelector('.scroll-bar-track');
+      this.showMoreBtn = this.container.querySelector('.show-more-btn');
+
+      this.init();
+    }
+
+    init() {
+      this.mouseEvents();
+      this.swipeEvents();
+      this.setupMobileToggle();
+    }
+
+    displayTrackScrollbar() {
+      if (this.carousel.scrollWidth <= this.carousel.clientWidth) {
+        this.scrollbarTrack.style.display = 'none';
+      } else {
+        this.scrollbarTrack.style.display = 'block';
+      }
+    }
+
+    // set thumb width based on visible vs total content ratio
+    setThumbWidth() {
+      const thumbWidthRatio = this.carousel.clientWidth / this.carousel.scrollWidth;
+      const thumbWidth = Math.max(30, this.scrollbarTrack.clientWidth * thumbWidthRatio);
+      this.scrollbarThumb.style.width = thumbWidth + 'px';
+    }
+
+    // Update thumb position based on carousel scroll
+    updateThumbPosition() {
+      if (!this.scrollbarThumb || !this.scrollbarTrack) return;
+
+      const carouselScrollableWidth = this.carousel.scrollWidth - this.carousel.clientWidth;
+      const trackScrollableWidth = this.scrollbarTrack.clientWidth - this.scrollbarThumb.clientWidth;
+
+      if (carouselScrollableWidth > 0) {
+        const scrollRatio = this.carousel.scrollLeft / carouselScrollableWidth;
+        const thumbLeft = scrollRatio * trackScrollableWidth;
+        this.scrollbarThumb.style.left = thumbLeft + 'px';
+      }
+    }
+
+    // mouse events for the scrollbar thumb
+    mouseEvents() {
+      if (!this.scrollbarThumb || !this.scrollbarTrack) return;;
+      // get carousel dimensions
+      const carouselVisibleWidth = this.carousel.clientWidth; // Visible width
+      const carouselTotalWidth = this.carousel.scrollWidth; // Total content width
+      const carouselScrollableWidth = carouselTotalWidth - carouselVisibleWidth; // How much can be scrolled
+
+      // get scrollbar track width
+      const scrollbarTrackWidth = this.scrollbarTrack.clientWidth;
+
+      // display scrollbar track if the content is scrollable
+      this.displayTrackScrollbar();
+
+      // set thumb width
+      this.setThumbWidth();
+
+      // Initialize thumb position
+      this.updateThumbPosition();
+
+      // resize thumb width on window resize
+      window.addEventListener('resize', () => {
+        this.displayTrackScrollbar();
+        this.setThumbWidth();
+        this.updateThumbPosition();
+      });
+
+      let draggable = false;
+
+      // make thumb draggable along the track
+      this.scrollbarThumb.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        e.stopPropagation(); // prevent the event from bubbling up to parent elements
+        this.scrollbarThumb.classList.add('scroll-bar-thumb-dragging'); // visually indicate that the thumb is being dragged
+        this.scrollbarThumb.style.cursor = 'grabbing';
+
+        draggable = true;
+
+        document.addEventListener('mousemove', (e) => {
+          if (draggable) {
+            // Calculate the new left position relative to the track
+            const trackRect = this.scrollbarTrack.getBoundingClientRect();
+            const thumbRect = this.scrollbarThumb.getBoundingClientRect();
+            let newLeft = e.clientX - trackRect.left - thumbRect.width / 2;
+
+            // Set limits so the thumb stays within the track
+            const minLeft = 0;
+            const maxLeft = trackRect.width - thumbRect.width;
+            newLeft = Math.max(minLeft, Math.min(newLeft, maxLeft));
+
+            this.scrollbarThumb.style.left = newLeft + 'px';
+
+            // Calculate the scroll ratio and set carousel scrollLeft accordingly
+            const scrollRatio = newLeft / maxLeft;
+            const carouselScrollableWidth = this.carousel.scrollWidth - this.carousel.clientWidth;
+
+            this.carousel.scrollLeft = scrollRatio * carouselScrollableWidth;
+
+            // Update thumb position
+            this.updateThumbPosition();
+          }
+        });
+      });
+
+      document.addEventListener('mouseup', () => {
+        draggable = false;
+        this.scrollbarThumb.classList.remove('scroll-bar-thumb-dragging');
+        this.scrollbarThumb.style.cursor = 'grab';
+      });
+    }
+
+    // swipe events
+    swipeEvents() {
+      if (!this.carousel) return;
+
+      let startX = 0;
+      let startY = 0;
+      let startScrollLeft = 0;
+      let isDragging = false;
+      let startTime = 0;
+      let wasSwiping = false;
+
+      this.carousel.addEventListener('mousedown', (e) => {
+        if (isDragging) return;
+
+        startX = e.clientX;
+        startY = e.clientY;
+        startScrollLeft = this.carousel.scrollLeft;
+        startTime = Date.now();
+        isDragging = true;
+        wasSwiping = false;
+
+        e.preventDefault();
+      });
+
+
+      // Mouse move events
+      this.carousel.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        const currentX = e.clientX;
+        const currentY = e.clientY;
+        const deltaX = startX - currentX;
+        const deltaY = startY - currentY;
+
+
+        // Only handle horizontal swipes (prevent vertical scrolling interference)
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+          // Mark that we're swiping
+          wasSwiping = true;
+
+          // Calculate new scroll position
+          const newScrollLeft = startScrollLeft + deltaX;
+          this.carousel.scrollLeft = newScrollLeft;
+
+          // Update thumb position
+          this.updateThumbPosition();
+        }
+      });
+
+      // Bugfix: Global mouse up listener to prevent mouse getting stuck
+      document.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+        }
+      });
+
+      // Bugfix: Prevent clicks when swiping
+      this.carousel.addEventListener('click', (e) => {
+        if (wasSwiping) {
+          e.preventDefault();
+          e.stopPropagation();
+          wasSwiping = false;
+          return false;
+        }
+      }, true);
+    }
+
+    setupMobileToggle() {
+      if (this.showMoreBtn) {
+        this.showMoreBtn.addEventListener('click', () => {
+          this.mobileToggle();
+        });
+      }
+    }
+
+    mobileToggle() {
+      const productCards = this.carousel.querySelectorAll('.product-card');
+      const btnText = this.container.querySelector('[id^="btn-text-"]');
+      let isExpanded = this.showMoreBtn.getAttribute('data-expanded') === 'true';
+
+      productCards.forEach((card, index) => {
+        if (index >= 4) {
+          // Products after the first 4
+          if (isExpanded) {
+            // Collapse: hide on mobile, show on desktop
+            card.classList.add('hidden');
+            card.classList.add('md:block');
+          } else {
+            // Expand: show on both mobile and desktop
+            card.classList.remove('hidden');
+            card.classList.add('md:block');
+          }
+        }
+      });
+
+      if (isExpanded) {
+        btnText.textContent = '{{ 'sections.product_carousel.show_more_products' | t }}';
+        this.showMoreBtn.setAttribute('data-expanded', 'false');
+      } else {
+        btnText.textContent = '{{ 'sections.product_carousel.show_less' | t }}';
+        this.showMoreBtn.setAttribute('data-expanded', 'true');
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const carouselContainers = document.querySelectorAll('.carousel-container');
+    carouselContainers.forEach((container) => {
+      new ProductCarousel(container);
+    });
+  });
+
+</script>
+
+{% schema %}
+{
+  "name": "Product Carousel",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Carousel Title"
+    },
+    {
+      "type": "select",
+      "id": "product_selection",
+      "label": "Product Selection Method",
+      "options": [
+        {
+          "value": "manual",
+          "label": "Manual Selection"
+        },
+        {
+          "value": "collection",
+          "label": "From Collection"
+        },
+        {
+          "value": "best_selling",
+          "label": "Best Selling Products"
+        }
+      ],
+      "default": "best_selling"
+    },
+    {
+      "type": "product_list",
+      "id": "products",
+      "label": "Select Products",
+      "info": "Choose specific products to display",
+      "limit": 8
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Display products from this collection"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "label": "Show 'View All' button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View All button text",
+      "default": "View All"
+    },
+    {
+      "type": "url",
+      "id": "view_all_link",
+      "label": "View All button link",
+      "info": "Leave empty to link to all products"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Carousel",
+      "category": "Products"
+    }
+  ]
+}
+{% endschema %}

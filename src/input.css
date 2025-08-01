@@ -1,3 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Source+Serif+Pro:wght@300;400;600;700&family=Bebas+Neue&display=swap');
+
 @tailwind base;
 @tailwind components;
-@tailwind utilities; 
+@tailwind utilities;
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+  }
+
+  .scroll-bar-track {
+    position: relative;
+  }
+
+  .scroll-bar-track:hover {
+    cursor: pointer;
+  }
+
+  .scroll-bar-thumb {
+    position: absolute;
+    top: 0;
+    cursor: pointer;
+  }
+
+  .scroll-bar-track:hover {
+    .scroll-bar-thumb {
+      @apply top-[-1px] h-1.5 cursor-grab;
+    }
+  }
+  .scroll-bar-thumb-dragging {
+    @apply top-[-1px] h-1.5;
+  }
+}

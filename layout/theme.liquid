@@ -6,12 +6,12 @@
 
     {% # Load and preload the critical CSS %}
     {{ 'critical.css' | asset_url | stylesheet_tag: preload: true }}
-    
+
     {% # Load Tailwind CSS %}
     {{ 'tailwind.css' | asset_url | stylesheet_tag }}
 
     {% # Load Heroicons %}
-    <script src="https://unpkg.com/@heroicons/v2/24/outline/esm/index.js"></script>
+    <script src="https://unpkg.com/@heroicons/v2/24/outline/esm/index.js" defer></script>
 
     {% # Social, title, etc. %}
     {% render 'meta-tags' %}
