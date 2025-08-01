@@ -15,6 +15,9 @@ module.exports = {
         'serif-pro': ['Source Serif Pro', 'serif'],
         'bebas': ['Bebas Neue', 'sans-serif'],
       },
+      colors: {
+        'custom-gray': '#1C1D1D',
+      },
     },
   },
   plugins: [],

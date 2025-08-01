@@ -12,4 +12,10 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;  /* Safari and Chrome */
   }
+
+  .scroll-bar-track:hover {
+    .scroll-bar-thumb {
+      @apply bottom-[-1px] h-1.5;
+    }
+  }
 }
