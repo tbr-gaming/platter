@@ -113,7 +113,7 @@
                     {% endif %}
                   {% else %}
                     <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                      <span class="text-gray-400">No image</span>
+                      <span class="text-gray-400">{{ 'sections.product_carousel.no_image' | t }}</span>
                     </div>
                   {% endif %}
                 </div>
@@ -201,9 +201,8 @@
         <button
           id="show-more-btn-{{ section.id }}"
           class="show-more-btn bg-custom-gray text-white px-6 py-3 rounded-full font-semibold w-full font-poppins text-base leading-[140%] tracking-[0.03em]"
-          onclick="toggleProducts('{{ section.id }}')"
         >
-          <span id="btn-text-{{ section.id }}">Show More</span>
+          <span id="btn-text-{{ section.id }}">{{ 'sections.product_carousel.show_more_products' | t }}</span>
         </button>
       </div>
     {% endif %}
@@ -211,52 +210,25 @@
 </section>
 
 <script>
-  function toggleProducts(sectionId) {
-    const section = document.getElementById('product-carousel-' + sectionId);
-    const productCards = section.querySelectorAll('.product-card');
-    const btnText = document.getElementById('btn-text-' + sectionId);
-    const showMoreBtn = document.getElementById('show-more-btn-' + sectionId);
-
-    let isExpanded = showMoreBtn.getAttribute('data-expanded') === 'true';
-
-    productCards.forEach((card, index) => {
-      if (index >= 4) {
-        // Products after the first 4
-        if (isExpanded) {
-          card.classList.add('hidden');
-          card.classList.remove('md:block');
-        } else {
-          card.classList.remove('hidden');
-          card.classList.add('md:block');
-        }
-      }
-    });
-
-    if (isExpanded) {
-      btnText.textContent = 'Show More';
-      showMoreBtn.setAttribute('data-expanded', 'false');
-    } else {
-      btnText.textContent = 'Show Less';
-      showMoreBtn.setAttribute('data-expanded', 'true');
-    }
-  }
-
   class ProductCarousel {
     constructor(container) {
       this.container = container;
       this.carousel = this.container.querySelector('.product-carousel');
       this.scrollbarThumb = this.container.querySelector('.scroll-bar-thumb');
       this.scrollbarTrack = this.container.querySelector('.scroll-bar-track');
+      this.showMoreBtn = this.container.querySelector('.show-more-btn');
+
       this.init();
     }
 
     init() {
-      if (!this.scrollbarThumb || !this.scrollbarTrack) return;;
       this.mouseevents();
+      this.setupMobileToggle();
     }
 
     // mouse events for the scrollbar thumb
     mouseevents() {
+      if (!this.scrollbarThumb || !this.scrollbarTrack) return;;
       // get carousel dimensions
       const carouselVisibleWidth = this.carousel.clientWidth; // Visible width
       const carouselTotalWidth = this.carousel.scrollWidth; // Total content width
@@ -309,6 +281,41 @@
         this.scrollbarThumb.classList.remove('scroll-bar-thumb-dragging');
         this.scrollbarThumb.style.cursor = 'grab';
       });
+    }
+
+    setupMobileToggle() {
+      if (this.showMoreBtn) {
+        this.showMoreBtn.addEventListener('click', () => {
+          this.mobileToggle();
+        });
+      }
+    }
+
+    mobileToggle() {
+      const productCards = this.carousel.querySelectorAll('.product-card');
+      const btnText = this.container.querySelector('[id^="btn-text-"]');
+      let isExpanded = this.showMoreBtn.getAttribute('data-expanded') === 'true';
+
+      productCards.forEach((card, index) => {
+        if (index >= 4) {
+          // Products after the first 4
+          if (isExpanded) {
+            card.classList.add('hidden');
+            card.classList.remove('md:block');
+          } else {
+            card.classList.remove('hidden');
+            card.classList.add('md:block');
+          }
+        }
+      });
+
+      if (isExpanded) {
+        btnText.textContent = '{{ 'sections.product_carousel.show_more_products' | t }}';
+        this.showMoreBtn.setAttribute('data-expanded', 'false');
+      } else {
+        btnText.textContent = '{{ 'sections.product_carousel.show_less' | t }}';
+        this.showMoreBtn.setAttribute('data-expanded', 'true');
+      }
     }
   }
 
